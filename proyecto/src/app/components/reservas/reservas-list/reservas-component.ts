@@ -193,16 +193,30 @@ export class ReservasComponent {
     this.mostrarModalEditarReserva = false;
   }
 
-  actualizarReserva(reservaEditada: Reserva): void {
-    this.reservaService.editarReserva(reservaEditada)
-      .subscribe(() => this.cargarReservas());
+  actualizarReserva(reserva: Reserva): void {
+    this.reservaService.editarReserva(reserva).subscribe({
+      next: () => {
+        this.cargarReservas();
+        alert('Reserva actualizada exitosamente');
+      },
+      error: () => {
+        alert('Error al actualizar la reserva');  
+      }
+    });
     this.cerrarModalEditarReserva();
   }
 
   eliminarReserva(reserva: Reserva): void {
     if (confirm('¿Deseas eliminar esta reserva?')) {
-      this.reservaService.eliminarReserva(reserva.id!)
-        .subscribe(() => this.cargarReservas());
+      this.reservaService.eliminarReserva(reserva.id!).subscribe({
+        next: () => {
+          this.cargarReservas();
+          alert('Reserva eliminada exitosamente');
+        },
+        error: () => {
+          alert('Error al eliminar la reserva');
+        }
+      })
     }
   }
 }

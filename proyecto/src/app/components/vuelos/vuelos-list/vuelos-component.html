@@ -210,7 +210,7 @@
 
 <!-- Modales para Reservas -->
 <app-reservas-save *ngIf="mostrarModalSaveReserva && reservaSeleccionada" [isOpen]="mostrarModalSaveReserva"
-  [reservaToEdit]="reservaSeleccionada" (onClose)="cerrarModalSaveReserva()" (onSave)="GuardarReserva($event)">
+  [reservaToEdit]="reservaSeleccionada" [pagoToEdit]="pagoToEdit" (onClose)="cerrarModalSaveReserva()" (onSave)="GuardarReserva($event)">
 </app-reservas-save>
 
 <!-- Modal para Agregar Vuelo -->

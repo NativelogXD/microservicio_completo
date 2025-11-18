@@ -1,0 +1,78 @@
+<!-- Modal Overlay -->
+<div class="modal-overlay" *ngIf="isOpen" (click)="closeModal()">
+    <!-- Modal Container -->
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h2 class="modal-title">Modificar Reserva</h2>
+            <button class="modal-close" (click)="closeModal()" type="button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Modal Form -->
+        <form class="modal-form" #reservaForm="ngForm" (ngSubmit)="saveReserva()">
+            <div class="modal-body">
+                <!-- Se ajusta form-grid para que solo contenga la sección de Reserva -->
+                <div class="form-grid-single">
+                    <!-- Información de la Reserva (MODIFICADA) -->
+                    <div class="form-section">
+                        <h3 class="section-title">Información de la Reserva</h3>
+
+                        <!-- Vuelo (Readonly, ya que no se debería cambiar el vuelo de una reserva existente) -->
+                        <div class="form-group">
+                            <label for="vuelo">Vuelo</label>
+                            <input type="text" id="vuelo" name="vuelo" [(ngModel)]="reserva.vuelo" required readonly
+                                class="form-input">
+                        </div>
+
+                        <!-- Estado de la Reserva (Editable, ya que puede cambiar) -->
+                        <div class="form-group">
+                            <label for="estadoReserva">Estado de la Reserva</label>
+                            <!-- Asumo que el estado de la reserva también es un enum o un conjunto de opciones -->
+                            <select id="estadoReserva" name="estadoReserva" [(ngModel)]="reserva.estado" required
+                                class="form-input form-select">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Confirmada">Confirmada</option>
+                                <option value="Cancelada">Cancelada</option>
+                                <option value="Completada">Completada</option>
+                            </select>
+                        </div>
+
+                        <!-- Número de Asiento (Editable) -->
+                        <div class="form-group">
+                            <label for="Numasiento">Número de Asiento</label>
+                            <input type="text" id="Numasiento" name="Numasiento" [(ngModel)]="reserva.numasiento"
+                                placeholder="Ej: 12A, 5B" required class="form-input">
+                        </div>
+                    </div>
+
+                    <!-- La sección de Información del Pago ha sido eliminada -->
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" (click)="closeModal()">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary" [disabled]="!reservaForm.form.valid">
+                    <i class="fas fa-save"></i>
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- NOTA: Se ha cambiado la clase 'form-grid' por 'form-grid-single' para evitar que el grid de dos columnas se rompa al eliminar una sección.
+    Deberás añadir el siguiente CSS para que el diseño se mantenga en una sola columna:
+
+    .form-grid-single {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+-->

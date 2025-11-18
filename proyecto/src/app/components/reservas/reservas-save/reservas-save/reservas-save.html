@@ -25,8 +25,8 @@
                         <div class="form-group">
                             <div class="form-group">
                                 <label for="vuelo">Vuelo</label>
-                                <input type="text" id="vuelo" name="vuelo" [(ngModel)]="reserva.vuelo"
-                                    required readonly class="form-input">
+                                <input type="text" id="vuelo" name="vuelo" [(ngModel)]="reserva.vuelo" required readonly
+                                    class="form-input">
                             </div>
                         </div>
 
@@ -40,6 +40,57 @@
                             <label for="Numasiento">Número de Asiento</label>
                             <input type="text" id="Numasiento" name="Numasiento" [(ngModel)]="reserva.numasiento"
                                 placeholder="Ej: 12A, 5B" required class="form-input">
+                        </div>
+                    </div>
+
+                    <!-- Información del Pago (MODIFICADA) -->
+                    <div class="form-section">
+                        <h3 class="section-title">Información del Pago</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pagoFecha">Fecha de Pago</label>
+                                <!-- Se elimina 'readonly' para permitir la edición si es necesario -->
+                                <input type="date" id="pagoFecha" name="pagoFecha" [(ngModel)]="pago.fecha"
+                                    class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pagoMonto">Monto</label>
+                                <!-- Se elimina 'readonly' para permitir la edición si es necesario -->
+                                <input type="number" id="pagoMonto" name="pagoMonto" [(ngModel)]="pago.monto"
+                                    class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="pagoMoneda">Moneda</label>
+                                <!-- Se elimina 'readonly' para permitir la edición si es necesario -->
+                                <input type="text" id="pagoMoneda" name="pagoMoneda" [(ngModel)]="pago.moneda"
+                                    class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pagoMetodo">Método de Pago</label>
+                            <!-- Se cambia de input a select para el menú desplegable -->
+                            <select id="pagoMetodo" name="pagoMetodo" [(ngModel)]="pago.metodo_pago"
+                                class="form-input form-select">
+                                <!-- Opciones basadas en el enum MetodoPago -->
+                                <option value="TARJETA">TARJETA</option>
+                                <option value="EFECTIVO">EFECTIVO</option>
+                                <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                                <option value="PAYPAL">PAYPAL</option>
+                                <option value="CRYPTO">CRYPTO</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pagoEstado">Estado del Pago</label>
+                            <!-- Se mantiene el badge para mostrar el estado actual -->
+                            <div class="status-badge" [ngClass]="'status-' + pago.estado.toLowerCase()">
+                                {{ pago.estado }}
+                            </div>
                         </div>
                     </div>
                 </div>

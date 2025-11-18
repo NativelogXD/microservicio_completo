@@ -10,8 +10,12 @@ import { Reserva } from '../../../models/reserva'
 import { VueloService } from '../../../services/vuelos/vuelo-service'
 import { ReservaService } from '../../../services/reservas/reserva-service'
 import { VuelosSave } from "../save/vuelos-save/vuelos-save";
-import { error } from 'console'
+import { Console, error } from 'console'
 import { VuelosEdit } from "../edit/vuelos-edit/vuelos-edit";
+import { Pago } from '../../../models/pago'
+import { EstadoPago } from '../../../models/enums/estadoPago'
+import { MetodoPago } from '../../../models/enums/MetodoPago'
+import { PagoService } from '../../../services/pago/pago-service'
 
 
 // Interfaz para los datos del gráfico de destinos/aerolíneas
@@ -55,12 +59,14 @@ export class VuelosComponent implements OnInit {
   vueloSeleccionado: Vuelo | null = null;
 
   reservaSeleccionada: Reserva | null = null;
+  pagoToEdit: Pago | null = null;
   vueloSeleccionadoParaReserva: Vuelo | null = null;
 
   constructor(private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private vueloService: VueloService,
-    private reservaService: ReservaService
+    private reservaService: ReservaService,
+    private pagoService: PagoService
   ) { }
 
   ngOnInit(): void {
@@ -184,16 +190,41 @@ export class VuelosComponent implements OnInit {
     // 2. Asignar la reserva inicial a la variable que el modal espera
     this.reservaSeleccionada = nuevaReserva;
     this.reservaSeleccionada.usuario = this.usuario?.email ?? "";
+
+    const pago: Pago = {
+      id: null,
+      monto: vuelo.precioBase,
+      fecha: new Date(),
+      estado: EstadoPago.PENDIENTE,
+      moneda: "",
+      metodo_pago: MetodoPago.TRANSFERENCIA,
+      reserva: "",
+      usuario: ""
+    }
+
+    this.pagoToEdit = pago
     // 3. Abrir el modal
     this.mostrarModalSaveReserva = true;
   }
 
-  GuardarReserva(reserva:Reserva): void{
+  GuardarReserva(event: { reserva: Reserva, pago: Pago }): void {
+    const reserva = event.reserva
+    const pago = event.pago
     this.reservaService.crearReserva(reserva).subscribe({
-      next: () => {
-        alert('Reserva guardada con exito')
-        this.cerrarModalSaveReserva()
-        this.loadVuelosData()
+      next: (reservaCreada: Reserva) => {
+        pago.reserva = reservaCreada.id!.toString()
+        pago.usuario = reservaCreada.usuario
+        console.log(pago)
+        this.pagoService.savePago(pago).subscribe({
+          next: () => {
+            alert('Reserva y pago guardados con éxito');
+            this.cerrarModalSaveReserva();
+            this.loadVuelosData();
+          },
+          error: () => {
+            alert('Error al guardar el pago');
+          }
+          })
       },
       error: () => alert('Error al guardar la reserva')
     })
@@ -221,7 +252,7 @@ export class VuelosComponent implements OnInit {
     this.reservaSeleccionada = null;
   }
 
-  cerrarModal(): void{
+  cerrarModal(): void {
     this.mostrarModalSaveAvion = false;
   }
 
@@ -270,8 +301,8 @@ export class VuelosComponent implements OnInit {
     })
   }
 
-  eliminarVuelo(vuelo:Vuelo){
-    if(confirm(`¿Está seguro de eliminar el vuelo ${vuelo.codigoVuelo}?`)){
+  eliminarVuelo(vuelo: Vuelo) {
+    if (confirm(`¿Está seguro de eliminar el vuelo ${vuelo.codigoVuelo}?`)) {
       this.vueloService.deleteVuelo(vuelo.id!).subscribe({
         next: () => {
           this.loadVuelosData()
@@ -283,7 +314,7 @@ export class VuelosComponent implements OnInit {
       })
     }
     this.cdr.detectChanges()
-    }
+  }
 
   editarVuelo(vuelo: Vuelo): void {
     this.vueloSeleccionado = vuelo
