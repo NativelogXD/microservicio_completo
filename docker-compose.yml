@@ -1,0 +1,384 @@
+services:
+  # 🌐 API Gateway
+  api-gateway:
+    build: ./API_GATEWAY
+    ports:
+      - "8080:8080"
+    environment:
+      # Alinea el secreto JWT del Gateway con el usado por el microservicio de Usuarios
+      JWT_SECRET_KEY: J9arT8avL4aqP2adW7ayB1azM6aeN0afS3agJ5ahK8auY2aR4aC7aA9aZ1aaD0axV6aT5aO3aP8aqE2amL9aF7asH5aK2aN4aR8aV3aY1apB0azC6aG9aX5atJ7aaL2adM4afN8awQ0aeS3arH1auT9aP5aoE7aZ2aiV6ayB3acA8aD4ajO9aL1akF0arT7apN5abM2agS4aeW3aqY6ahJ8anU0aR9aC5aV7aX4atB1aK3aG2aL8aoD6aaF9asM0awE7anH4afP1arS5auQ2aT3aiY8aZ0ajV6a
+    networks:
+      - microservices-network
+    depends_on:
+      - aviones-api
+      - reserva-api
+      - mantenimiento-api
+      - usuarios-api
+      - vuelos-api
+
+  # ✈️ Micro Aviones (FastAPI)
+  aviones-api:
+    build: ./microservicio-avion
+    ports:
+      - "8000:8000"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-aviones:5432/${POSTGRES_DB}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    networks:
+      - microservices-network
+    depends_on:
+      postgres-aviones:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # 🧩 Server MCP
+  server-mcp:
+    build:
+      context: ./AgenteIA
+      dockerfile: app/server/DockerFile
+    ports:
+      - "3001:3001"
+    networks:
+      - microservices-network
+    env_file:
+      - ./AgenteIA/.env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: postgres-aviones
+      POSTGRES_PORT: 5432
+      PORT: 3001
+      AVIONES_BASE_URL: http://api-gateway:8080/ServiceAvion
+      PAGO_BASE_URL: http://api-gateway:8080/ServicePago
+      RESERVA_BASE_URL: http://api-gateway:8080/ServiceReserva/api
+      MANTENIMIENTO_BASE_URL: http://api-gateway:8080/ServiceMantenimiento
+      USUARIOS_BASE_URL: http://api-gateway:8080/ServiceUsuario/api
+      NOTIFICACIONES_BASE_URL: http://api-gateway:8080/ServiceNotificaciones/api
+      VUELOS_BASE_URL: http://api-gateway:8080/ServiceVuelos/api
+    # Ajustamos el comando a la ruta real del archivo copiado en la imagen (ver DockerFile)
+    command: ["python", "-m", "app.server.server_mcp", "--http"]
+    depends_on:
+      postgres-aviones:
+        condition: service_healthy
+    restart: on-failure
+    tty: true
+    stdin_open: true
+
+ 
+ 
+
+  # 🌐 API HTTP del Agente IA
+  api-mcp:
+    build:
+      context: ./AgenteIA
+      dockerfile: app/api/DockerFile
+    ports:
+      - "5002:5000"
+    networks:
+      - microservices-network
+    env_file:
+      - ./AgenteIA/.env
+    environment:
+      MCP_SERVER_URL: http://server-mcp:3001
+      AVIONES_BASE_URL: http://api-gateway:8080/ServiceAvion
+      PAGO_BASE_URL: http://api-gateway:8080/ServicePago
+      RESERVA_BASE_URL: http://api-gateway:8080/ServiceReserva/api
+      MANTENIMIENTO_BASE_URL: http://api-gateway:8080/ServiceMantenimiento
+      USUARIOS_BASE_URL: http://api-gateway:8080/ServiceUsuario/api
+      NOTIFICACIONES_BASE_URL: http://api-gateway:8080/ServiceNotificaciones/api
+      VUELOS_BASE_URL: http://api-gateway:8080/ServiceVuelos/api
+      ENABLE_LLM_REASONING: "true"
+    depends_on:
+      - server-mcp
+    restart: on-failure
+
+  # 🗄️ Base de datos Postgres (Aviones)
+  postgres-aviones:
+    image: postgres:15-alpine
+    container_name: aviones_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "55432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d aviondb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 🗄️ Base de datos Postgres (Pagos)
+  postgres-pagos:
+    image: postgres:15-alpine
+    container_name: pagos_postgres
+    environment:
+      POSTGRES_DB: pagodb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "55433:5432"
+    volumes:
+      - postgres_data_pagos:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d pagodb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 🗄️ Base de datos MySQL (Reservas)
+  mysql-reservas:
+    image: mysql:8.0
+    container_name: reservas_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Kurumi107911
+      MYSQL_DATABASE: microservicio_4
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_reservas_data:/var/lib/mysql
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 💳 Microservicio Pago (NestJS)
+  microservice-pago:
+    build:
+      context: ./microservice-pago
+    container_name: microservice-pago
+    restart: unless-stopped
+    env_file:
+      - ./microservice-pago/.env
+    environment:
+      POSTGRES_HOST: postgres-pagos
+      RESERVAS_BASE_URL: http://api-gateway:8080/ServiceReserva/api/reservas
+    depends_on:
+      postgres-pagos:
+        condition: service_healthy
+    ports:
+      - "3002:3000"
+    networks:
+      - microservices-network
+
+  # 🧾 Microservicio Reserva (Spring Boot)
+  reserva-api:
+    build: ./Microservice_Reserva_Aerolinea
+    container_name: microservice-reserva
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-reservas:3306/microservicio_4?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Kurumi107911
+    ports:
+      - "8081:8080"
+    networks:
+      - microservices-network
+    depends_on:
+      mysql-reservas:
+        condition: service_healthy
+
+  # 🛠️ Microservicio Mantenimiento Aeropuerto (Flask)
+  mantenimiento-api:
+    build: ./Microservicio_mantenimiento_aeropuerto
+    container_name: microservice-mantenimiento
+    restart: unless-stopped
+    environment:
+      FLASK_ENV: production
+      DB_HOST: mysql-mantenimiento
+      DB_PORT: 3306
+      DB_NAME: microservicio_mantenimiento
+      DB_USER: root
+      DB_PASSWORD: MantenimientoDB123!
+    ports:
+      - "5001:5000"
+    networks:
+      - microservices-network
+    depends_on:
+      mysql-mantenimiento:
+        condition: service_healthy
+
+  # 🗄️ Base de datos MySQL (Mantenimiento)
+  mysql-mantenimiento:
+    image: mysql:8.0
+    container_name: mantenimiento_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: MantenimientoDB123!
+      MYSQL_DATABASE: microservicio_mantenimiento
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_mantenimiento_data:/var/lib/mysql
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 👤 Microservicio Usuarios (Spring Boot)
+  usuarios-api:
+    build: ./Microservicio_Usuarios_Aerolinea
+    container_name: microservice-usuarios
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-usuarios:3306/${USUARIOS_DB_NAME}?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${USUARIOS_DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${USUARIOS_DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "8082:8081"
+    networks:
+      - microservices-network
+    depends_on:
+      mysql-usuarios:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/Servicio1/swagger-ui.html || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+
+  # ✈️ Microservicio Vuelos (Spring Boot)
+  vuelos-api:
+    build: ./Microservicio_Vuelos_Aerolinea
+    container_name: microservice-vuelos
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mysql-vuelos:3306/vuelos_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Pool8080
+    ports:
+      - "8888:8888"
+    networks:
+      - microservices-network
+    depends_on:
+      mysql-vuelos:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8888/GestionVuelos/swagger-ui.html || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # 🗄️ Base de datos MariaDB (Vuelos)
+  mysql-vuelos:
+    image: mariadb:11
+    container_name: vuelos_mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: Pool8080
+      MARIADB_DATABASE: vuelos_db
+    ports:
+      - "3311:3306"
+    volumes:
+      - mysql_vuelos_data:/var/lib/mysql
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -p$${MARIADB_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+
+  # 👥 Microservicio Notificaciones (Spring Boot)
+  notificaciones-api:
+    build: ./Microservicio_Notificaciones
+    container_name: microservice-notificaciones
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-notificaciones:3306/microservicio_notificaciones?createDatabaseIfNotExist=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${NOTIFICACIONES_DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: dev
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL}
+      RAPIDAPI_KEY: ${RAPIDAPI_KEY}
+      RAPIDAPI_HOST: ${RAPIDAPI_HOST}
+      NOTIFICATIONS_SMS_ENABLED: ${NOTIFICATIONS_SMS_ENABLED:-false}
+    ports:
+      - "8083:8080"
+    networks:
+      - microservices-network
+    env_file:
+      - ./.env
+    depends_on:
+      mysql-notificaciones:
+        condition: service_healthy
+
+  # 🗄️ Base de datos MySQL (Usuarios)
+  mysql-usuarios:
+    image: mysql:8.0
+    container_name: usuarios_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${USUARIOS_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${USUARIOS_DB_NAME}
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql_usuarios_data:/var/lib/mysql
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 🗄️ Base de datos MySQL (Notificaciones)
+  mysql-notificaciones:
+    image: mysql:8.0
+    container_name: notificaciones_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${NOTIFICACIONES_DB_PASSWORD}
+      MYSQL_DATABASE: microservicio_notificaciones
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql_notificaciones_data:/var/lib/mysql
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  postgres_data:
+  postgres_data_pagos:
+  mysql_reservas_data:
+  mysql_mantenimiento_data:
+  mysql_usuarios_data:
+  mysql_notificaciones_data:
+  mysql_vuelos_data:
+
+networks:
+  microservices-network:
+    driver: bridge

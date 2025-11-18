@@ -1,0 +1,232 @@
+<!-- 
+  Este es el componente de Reservas.
+  Utiliza el sidebar del primer archivo y el contenido principal (main) del segundo,
+  pero todo adaptado para mostrar "Reservas".
+-->
+<div class="dashboard-container">
+
+  <!-- Sidebar (del Archivo 1 - Reservas) -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">Portal de Operaciones</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul class="menu-list">
+        <li class="menu-item">
+          <a href="/">
+            <i class="fas fa-home"></i>
+            <span>Inicio</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="/agent">
+            <i class="fas fa-robot"></i>
+            <span>Agente de IA</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="/vuelos">
+            <i class="fa-solid fa-plane-up"></i>
+            <span>Vuelos Disponibles</span>
+          </a>
+        </li>
+        <li class="menu-item active">
+          <a href="/reservas">
+            <i class="fa-solid fa-ticket"></i>
+            <span>Mis Reservaciones</span>
+          </a>
+        </li>
+        <!-- Menú de Empleados visible solo para Admin -->
+        <li class="menu-item" *ngIf="isAdmin">
+          <a href="/empleados">
+            <i class="fas fa-users"></i>
+            <span>Empleados</span>
+          </a>
+        </li>
+        <li class="menu-item" *ngIf="isAdmin">
+          <a href="/mantenimientos">
+            <i class="fas fa-tools"></i>
+            <span>Mantenimiento</span>
+          </a>
+        </li>
+        <li class="menu-item" *ngIf="isAdmin">
+          <a href="/aviones">
+            <i class="fa-solid fa-plane-arrival"></i>
+            <span>Registro de Aviones</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Menú de Usuario (del Archivo 1) -->
+    <div class="sidebar-footer">
+      <div class="user-menu">
+        <div class="user-info" (click)="toggleUserMenu()">
+          <i class="fas fa-user-circle"></i>
+          <span>{{usuario?.nombre || 'Invitado' }}</span>
+          <i class="fas fa-chevron-down dropdown-arrow" [class.rotate]="isUserMenuOpen"></i>
+        </div>
+
+        <div class="user-dropdown" [class.show]="isUserMenuOpen">
+          <button *ngIf="!isUserRegistered" class="dropdown-item" (click)="handleLogin()">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Iniciar Sesión</span>
+          </button>
+          <button *ngIf="!isUserRegistered" class="dropdown-item" (click)="handleRegister()">
+            <i class="fas fa-user-plus"></i>
+            <span>Registrarse</span>
+          </button>
+          <button *ngIf="isUserRegistered" class="dropdown-item" (click)="handleEditProfile()">
+            <i class="fas fa-user-cog"></i>
+            <span>Editar Perfil</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 
+    Contenido Principal (Main Content)
+    Estructura del Archivo 2 (Empleados), pero con datos de Reservas.
+  -->
+  <main class="main-content">
+    <div class="content-header">
+      <h1 class="page-title">Mis Reservas</h1>
+      <p class="page-subtitle">Visualiza y administra tus reservas</p>
+    </div>
+
+    <!-- Tarjetas de Estadísticas (Stats Cards) -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <i class="fas fa-ticket-alt"></i>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">Total Reservas</p>
+          <h3 class="stat-value">{{totalReservas}}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">Completadas</p>
+          <h3 class="stat-value">{{reservasCompletadas}}</h3>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon red">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">Canceladas</p>
+          <h3 class="stat-value">{{reservasCanceladas}}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de Gráficos (Charts Section) -->
+    <div class="charts-grid">
+
+      <!-- Gráfico de Pie: Reservas por Estado -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">Reservas por Estado</h3>
+        </div>
+        <div class="chart-content">
+          <div class="pie-chart">
+            <svg viewBox="0 0 200 200" class="pie-svg">
+              <circle *ngFor="let estado of estados; let i = index" cx="100" cy="100" r="80" fill="none"
+                [attr.stroke]="estado.color" stroke-width="40"
+                [attr.stroke-dasharray]="estado.percentage * 5.03 + ' 503'"
+                [attr.stroke-dashoffset]="-getCumulativePercentageEstado(i) * 5.03" transform="rotate(-90 100 100)">
+              </circle>
+            </svg>
+
+            <div class="pie-legend">
+              <div class="legend-item" *ngFor="let estado of estados">
+                <span class="legend-color" [style.background-color]="estado.color"></span>
+                <span class="legend-label">{{estado.name}} ({{estado.percentage | number:'1.0-0'}}%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráfico de Barras: Reservas por Vuelo -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">Reservas por Vuelo</h3>
+        </div>
+        <div class="chart-content">
+          <div class="bar-chart">
+            <div class="bar-item" *ngFor="let vuelo of vuelos">
+              <div class="bar-label">{{vuelo.name}}</div>
+              <div class="bar-container">
+                <div class="bar-fill" [style.width.%]="vuelo.reservasPorcentaje" [style.background-color]="vuelo.color">
+                </div>
+                <span class="bar-value">{{vuelo.reservasCount}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de Reservas (Reservations Table) -->
+    <div class="table-card">
+      <div class="table-header">
+        <h3 class="table-title">Mis Reservas</h3>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Vuelo</th>
+              <th>Estado</th>
+              <th>N° Asiento</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- El *ngFor ahora itera sobre 'reservasFiltradas' -->
+            <tr *ngFor="let reserva of reservasFiltradas">
+              <td>{{reserva.id}}</td>
+              <td>{{reserva.vuelo}}</td>
+              <td>
+                <!-- Badge de Estado (como en tu primer HTML) -->
+                <span class="badge" [ngClass]="{
+                                  'badge-green': reserva.estado.toLowerCase() === 'Confirmada',
+                                  'badge-yellow': reserva.estado.toLowerCase() === 'Pendiente',
+                                  'badge-red': reserva.estado.toLowerCase() === 'Cancelada'
+                              }">{{reserva.estado}}</span>
+              </td>
+              <td>{{reserva.numasiento}}</td>
+              <td>
+                <div class="action-buttons">
+                  <!-- CORRECCIÓN: El botón de editar debe ABRIR el modal -->
+                  <button class="btn-action btn-edit" (click)="abrirEditarReserva(reserva)" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-action btn-delete" (click)="eliminarReserva(reserva)" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <app-reservas-edit *ngIf="mostrarModalEditarReserva && reservaSeleccionada" [isOpen]="mostrarModalEditarReserva"
+    [reservaToEdit]="reservaSeleccionada" (onClose)="cerrarModalEditarReserva()" (onSave)="actualizarReserva($event)">
+  </app-reservas-edit>
+
+</div>

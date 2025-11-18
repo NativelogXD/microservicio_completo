@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Empleado</title>
+</head>
+
+<body>
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" *ngIf="isOpen" (click)="closeModal()">
+        <!-- Modal Container -->
+        <div class="modal-container" (click)="$event.stopPropagation()">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2 class="modal-title">Editar Empleado</h2>
+                <button class="close-button" (click)="closeModal()" type="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <form #empleadoForm="ngForm" (ngSubmit)="saveEmpleado()">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <!-- Información Personal -->
+                        <div class="form-section">
+                            <h3 class="section-title">Información Personal</h3>
+
+                            <div class="form-group">
+                                <label for="cedula">Cédula</label>
+                                <input type="text" id="cedula" name="cedula" [(ngModel)]="empleado.cedula"
+                                    placeholder="Ingrese la cédula" required class="form-input">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nombre">Nombre</label>
+                                    <input type="text" id="nombre" name="nombre" [(ngModel)]="empleado.nombre"
+                                        placeholder="Ingrese el nombre" required class="form-input">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="apellido">Apellido</label>
+                                    <input type="text" id="apellido" name="apellido" [(ngModel)]="empleado.apellido"
+                                        placeholder="Ingrese el apellido" required class="form-input">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="telefono">Teléfono</label>
+                                <input type="tel" id="telefono" name="telefono" [(ngModel)]="empleado.telefono"
+                                    placeholder="Ingrese el teléfono" required class="form-input">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" [(ngModel)]="empleado.email"
+                                    placeholder="correo@ejemplo.com" required class="form-input">
+                            </div>
+                        </div>
+
+                        <!-- Información Laboral -->
+                        <div class="form-section">
+                            <h3 class="section-title">Información Laboral</h3>
+
+                            <div class="form-group">
+                                <label for="cargo">Cargo</label>
+                                <select id="cargo" name="cargo" [(ngModel)]="empleado.cargo" required
+                                    class="form-select">
+                                    <option value="">Seleccione un cargo</option>
+                                    <option value="Desarrollador">Desarrollador</option>
+                                    <option value="Líder de Equipo">Líder de Equipo</option>
+                                    <option value="Gerente">Gerente</option>
+                                    <option value="Analista">Analista</option>
+                                    <option value="Diseñador">Diseñador</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="salario">Salario</label>
+                                <input type="number" id="salario" name="salario" [(ngModel)]="empleado.salario"
+                                    placeholder="0" required min="0" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" (click)="closeModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary" [disabled]="!empleadoForm.form.valid">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Actualizar Empleado
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

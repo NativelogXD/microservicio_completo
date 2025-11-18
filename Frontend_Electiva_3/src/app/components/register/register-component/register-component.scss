@@ -1,0 +1,301 @@
+/* Reset y configuración base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  :host {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; // Mover font-family aquí es opcional, pero bueno para consistencia.
+    background-color: #0f172a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  
+  /* Contenedor principal del registro */
+  .registro-container {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Tarjeta del formulario */
+  .registro-card {
+    width: 100%;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Header del formulario */
+  .registro-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .logo-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .logo-icon i {
+    font-size: 2rem;
+    color: #ffffff;
+  }
+  
+  .registro-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #f8fafc;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+  
+  .registro-subtitle {
+    font-size: 0.9375rem;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+  
+  /* Formulario */
+  .registro-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  
+  /* Grupo de formulario */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  /* Fila de formulario (para contraseñas lado a lado) */
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  /* Etiquetas */
+  .form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #cbd5e1;
+  }
+  
+  .form-label i {
+    font-size: 0.875rem;
+    color: #94a3b8;
+  }
+  
+  /* Inputs */
+  .form-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 0.5rem;
+    color: #e2e8f0;
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+  }
+  
+  .form-input::placeholder {
+    color: #64748b;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: #0f172a;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .form-input:hover {
+    border-color: #475569;
+  }
+  
+  /* Checkbox */
+  .form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  
+  .checkbox-input {
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid #334155;
+    border-radius: 0.25rem;
+    background-color: #0f172a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  
+  .checkbox-input:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+  }
+  
+  .checkbox-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .checkbox-label {
+    font-size: 0.875rem;
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+  
+  /* Enlaces */
+  .link {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+  
+  .link:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+  }
+  
+  /* Botón de envío */
+  .submit-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    border: none;
+    border-radius: 0.75rem;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+  }
+  
+  .submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+  }
+  
+  .submit-button:active {
+    transform: translateY(0);
+  }
+  
+  .submit-button i {
+    font-size: 1.125rem;
+  }
+  
+  /* Footer del formulario */
+  .registro-footer {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #334155;
+    text-align: center;
+  }
+  
+  .footer-text {
+    font-size: 0.9375rem;
+    color: #94a3b8;
+  }
+  
+  /* Responsive */
+  @media (max-width: 640px) {
+    .registro-card {
+      padding: 2rem 1.5rem;
+    }
+  
+    .registro-title {
+      font-size: 1.5rem;
+    }
+  
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  
+    .logo-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+    }
+  
+    .logo-icon i {
+      font-size: 1.75rem;
+    }
+  }
+
+/* Mensaje flotante */
+.mensaje-flotante {
+  position: fixed; /* flota sobre todo */
+  top: 20px; /* distancia desde arriba */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: fadeInOut 3s ease-in-out; /* animación suave */
+  animation-fill-mode: forwards; /* Mantiene el estado final de la animación */
+}
+
+/* Éxito */
+.success {
+  background-color: #22c55e;
+  color: #ffffff;
+}
+
+/* Error */
+.error {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+/* Animación de aparición/desaparición */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+}

@@ -1,0 +1,65 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onCancel()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h2 class="modal-title">Registrar Nuevo Avión</h2>
+            <button class="modal-close" (click)="onCancel()" type="button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Modal Form -->
+        <form class="modal-form" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+                <!-- Información del Avión -->
+                <div class="form-section">
+                    <h3 class="section-title">Datos del Avión</h3>
+
+                    <div class="form-group">
+                        <label for="modelo">Modelo</label>
+                        <input type="text" id="modelo" [(ngModel)]="avion.modelo" name="modelo"
+                            placeholder="Ej: Boeing 747" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aerolinea">Aerolínea</label>
+                        <input type="text" id="aerolinea" [(ngModel)]="avion.aerolinea" name="aerolinea"
+                            placeholder="Ej: Air Manus" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="capacidad">Capacidad de Pasajeros</label>
+                        <input type="number" id="capacidad" [(ngModel)]="avion.capacidad" name="capacidad"
+                            placeholder="Ej: 416" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fecha_fabricacion">Fecha de Fabricación</label>
+                        <input type="date" id="fecha_fabricacion" [(ngModel)]="avion.fecha_fabricacion"
+                            name="fecha_fabricacion" required>
+                    </div>
+
+                    <!-- Campo de Estado (Predefinido y Oculto o Deshabilitado) -->
+                    <div class="form-group">
+                        <label for="estado">Estado</label>
+                        <input type="text" id="estado" [(ngModel)]="avion.estado" name="estado" value="disponible"
+                            disabled>
+                        <!-- Nota: En el componente TypeScript (AvionSave), debes inicializar avion.estado = EstadoAvion.disponible -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" (click)="onCancel()">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i>
+                    Guardar Avión
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

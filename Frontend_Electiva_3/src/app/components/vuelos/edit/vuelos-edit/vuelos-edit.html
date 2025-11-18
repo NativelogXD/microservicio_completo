@@ -1,0 +1,120 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h2 class="modal-title">Editar Vuelo</h2>
+            <button class="modal-close" (click)="closeModal()" type="button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Modal Form -->
+        <form class="modal-form" #vueloForm="ngForm" (ngSubmit)="saveAvion()">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <!-- Información del Vuelo -->
+                    <div class="form-section">
+                        <h3 class="section-title">Información del Vuelo</h3>
+
+                        <div class="form-group">
+                            <label for="codigoVuelo">Código de Vuelo</label>
+                            <input type="text" id="codigoVuelo" [(ngModel)]="vuelo.codigoVuelo" name="codigoVuelo"
+                                placeholder="Ej: AV123" required class="form-input">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="origen">Origen</label>
+                                <input type="text" id="origen" [(ngModel)]="vuelo.origen" name="origen"
+                                    placeholder="Ciudad de Origen" required class="form-input">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="destino">Destino</label>
+                                <input type="text" id="destino" [(ngModel)]="vuelo.destino" name="destino"
+                                    placeholder="Ciudad de Destino" required class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fecha">Fecha</label>
+                                <input type="date" id="fecha" [(ngModel)]="vuelo.fecha" name="fecha" required
+                                    class="form-input">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hora">Hora</label>
+                                <input type="time" id="hora" [(ngModel)]="vuelo.hora" name="hora" required
+                                    class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="duracionMinutos">Duración (minutos)</label>
+                            <input type="number" id="duracionMinutos" [(ngModel)]="vuelo.duracionMinutos"
+                                name="duracionMinutos" placeholder="Duración en minutos" min="1" required
+                                class="form-input">
+                        </div>
+                    </div>
+
+                    <!-- Asignaciones y Precios -->
+                    <div class="form-section">
+                        <h3 class="section-title">Asignaciones y Precios</h3>
+
+                        <div class="form-group">
+                            <label for="pilotoId">Piloto Asignado</label>
+                            <select id="pilotoId" [(ngModel)]="vuelo.pilotoId" name="pilotoId" required
+                                class="form-select">
+                                <option value="" disabled>Seleccione un Piloto</option>
+                                <option *ngFor="let empleado of listEmpleados" [value]="empleado.id">
+                                    {{ empleado.nombre }} {{ empleado.apellido }} ({{ empleado.cedula }})
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="avionId">Avión Asignado</label>
+                            <select id="avionId" [(ngModel)]="vuelo.avionId" name="avionId" required
+                                class="form-select">
+                                <option value="" disabled>Seleccione un Avión</option>
+                                <option *ngFor="let avion of listAviones" [value]="avion.id">
+                                    {{ avion.modelo }} ({{ avion.aerolinea }})
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="estado">Estado del Vuelo</label>
+                            <select id="estado" [(ngModel)]="vuelo.estado" name="estado" required class="form-select">
+                                <option value="" disabled>Seleccione un Estado</option>
+                                <option value="Programado">Programado</option>
+                                <option value="En Vuelo">En Vuelo</option>
+                                <option value="Aterrizado">Aterrizado</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="precioBase">Precio Base</label>
+                            <input type="number" id="precioBase" [(ngModel)]="vuelo.precioBase" name="precioBase"
+                                placeholder="0.01" min="0.01" step="0.01" required class="form-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" (click)="closeModal()">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary" [disabled]="!vueloForm.form.valid">
+                    <i class="fas fa-save"></i>
+                    Actualizar Vuelo
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

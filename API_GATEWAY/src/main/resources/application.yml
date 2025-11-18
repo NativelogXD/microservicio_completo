@@ -1,0 +1,105 @@
+# Puerto del API Gateway
+server:
+  port: 8080
+
+# --- NUEVO: Configuración de la clave secreta ---
+# Leemos la clave secreta desde una variable de entorno para mayor seguridad
+jwt:
+  # Usa la variable de entorno JWT_SECRET_KEY si está presente; si no, cae al valor por defecto largo compatible
+  secret: ${JWT_SECRET_KEY:J9arT8avL4aqP2adW7ayB1azM6aeN0afS3agJ5ahK8auY2aR4aC7aA9aZ1aaD0axV6aT5aO3aP8aqE2amL9aF7asH5aK2aN4aR8aV3aY1apB0azC6aG9aX5atJ7aaL2adM4afN8awQ0aeS3arH1auT9aP5aoE7aZ2aiV6ayB3acA8aD4ajO9aL1akF0arT7apN5abM2agS4aeW3aqY6ahJ8anU0aR9aC5aV7aX4atB1aK3aG2aL8aoD6aaF9asM0awE7anH4afP1arS5auQ2aT3aiY8aZ0ajV6a}
+
+spring:
+  # --- NUEVO: Configuración de Seguridad ---
+  # Le decimos a Spring Security cómo debe validar los tokens JWT
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # ¡Importante! Especificamos que usamos el algoritmo HS256,
+          # igual que tu microservicio de usuarios.
+          jws-algorithms: HS256
+
+  # --- TUS RUTAS EXISTENTES (Sin cambios) ---
+  cloud:
+    gateway:
+      routes:
+        - id: aviones-route
+          uri: http://aviones-api:8000
+          predicates:
+            - Path=/ServiceAvion/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: "/ServiceAvion/(?<remaining>.*)"
+                replacement: "/${remaining}"
+
+        - id: agente-ia-route
+          uri: http://api-mcp:5000
+          predicates:
+            - Path=/AgentIA/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: "/AgentIA/(?<remaining>.*)"
+                replacement: "/${remaining}"
+
+        - id: pagos-route
+          uri: http://microservice-pago:3000
+          predicates:
+            - Path=/ServicePago/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: "/ServicePago/(?<remaining>.*)"
+                replacement: "/api/pagos/${remaining}"
+
+        - id: reserva-route
+          uri: http://reserva-api:8080
+          predicates:
+            - Path=/ServiceReserva/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: "/ServiceReserva/(?<remaining>.*)"
+                replacement: "/${remaining}"
+
+        - id: mantenimiento-route
+          uri: http://mantenimiento-api:5000
+          predicates:
+            - Path=/ServiceMantenimiento/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: "/ServiceMantenimiento/(?<remaining>.*)"
+                replacement: "/api/${remaining}"
+
+        # Esta es la ruta para tu servicio de usuarios
+        - id: usuarios-route
+          uri: http://usuarios-api:8081
+          predicates:
+            - Path=/ServiceUsuario/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: "/ServiceUsuario/(?<remaining>.*)"
+                replacement: "/Servicio1/${remaining}"
+
+        - id: notificaciones-route
+          uri: http://notificaciones-api:8080
+          predicates:
+            - Path=/ServiceNotificaciones/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: "/ServiceNotificaciones/(?<remaining>.*)"
+                replacement: "/ServicioNotificaciones/${remaining}"
+
+        - id: vuelos-route
+          uri: http://vuelos-api:8888
+          predicates:
+            - Path=/ServiceVuelos/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: "/ServiceVuelos/(?<remaining>.*)"
+                replacement: "/GestionVuelos/${remaining}"

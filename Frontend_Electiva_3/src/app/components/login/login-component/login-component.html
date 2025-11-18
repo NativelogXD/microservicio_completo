@@ -1,0 +1,102 @@
+<div class="login-container">
+  <div *ngIf="mostrarMensaje" [ngClass]="tipoMensaje" class="mensaje-flotante">
+    {{ mensaje }}
+  </div>
+  <div class="login-form-section">
+    <div class="login-form-wrapper">
+      <div class="brand">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="40" height="40" rx="8" fill="url(#gradient)"/>
+          <path d="M20 10L28 16V24L20 30L12 24V16L20 10Z" fill="white" opacity="0.9"/>
+          <defs>
+            <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#3b82f6"/>
+              <stop offset="1" stop-color="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <h1 class="brand-name">Bienvenido a Aetheris</h1>
+      </div>
+
+      <div class="login-header">
+        <h2 class="login-title">Iniciar Sesión</h2>
+      </div>
+
+      <form class="login-form" (ngSubmit)="loggin(email, password)">
+        <div class="form-group">
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="email"
+            class="form-input"
+            placeholder="tu@email.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            class="form-input"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              [(ngModel)]="rememberMe"
+              name="rememberMe"
+              class="checkbox-input"
+            />
+            <span class="checkbox-text">Recordarme</span>
+          </label>
+        </div>
+
+        <button type="submit" class="login-button">
+          Iniciar Sesión
+        </button>
+
+        <p class="login-subtitle login-signup-bottom">
+          ¿No tienes una cuenta? 
+          <a href="/register" class="signup-link">Regístrate ahora</a>
+        </p>
+
+        <div class="forgot-password" style="margin-top: 20px;">
+          <a href="/recoverPassword" class="forgot-link">¿Olvidaste tu contraseña?</a>
+        </div>
+      </form>
+
+      <div class="login-footer">
+        <p class="copyright">© 2025 Portal de Operaciones</p>
+        <div class="footer-links">
+          <a href="#" class="footer-link">Términos de Servicio</a>
+          <span class="separator">•</span>
+          <a href="#" class="footer-link">Política de Privacidad</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="video-section">
+    <video 
+      class="background-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      [src]="videoUrl"
+    >
+      Tu navegador no soporta el elemento de video.
+    </video>
+    <div class="video-overlay"></div>
+  </div>
+</div>

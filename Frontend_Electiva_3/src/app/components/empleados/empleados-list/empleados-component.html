@@ -1,0 +1,233 @@
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">Portal de Operaciones</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="/">
+                        <i class="fas fa-home"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/agent">
+                        <i class="fas fa-robot"></i>
+                        <span>Agente de IA</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/vuelos">
+                        <i class="fa-solid fa-plane-up"></i>
+                        <span>Vuelos Disponibles</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/reservas">
+                        <i class="fa-solid fa-ticket"></i>
+                        <span>Mis Reservaciones</span>
+                    </a>
+                </li>
+                <li class="menu-item active">
+                    <a href="/empleados">
+                        <i class="fas fa-users"></i>
+                        <span>Empleados</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/mantenimientos">
+                        <i class="fas fa-tools"></i>
+                        <span>Mantenimiento</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="/aviones">
+                        <i class="fa-solid fa-plane-arrival"></i>
+                        <span>Registro de Aviones</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-menu">
+                <div class="user-info" (click)="toggleUserMenu()">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{usuario?.nombre || 'Invitado' }}</span>
+                    <i class="fas fa-chevron-down dropdown-arrow" [class.rotate]="isUserMenuOpen"></i>
+                </div>
+
+                <div class="user-dropdown" [class.show]="isUserMenuOpen">
+                    <button *ngIf="!isUserRegistered" class="dropdown-item" (click)="handleLogin()">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Iniciar Sesión</span>
+                    </button>
+                    <button *ngIf="!isUserRegistered" class="dropdown-item" (click)="handleRegister()">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Registrarse</span>
+                    </button>
+                    <button *ngIf="isUserRegistered" class="dropdown-item" (click)="handleProfile()">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Editar Perfil</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="page-title">Gestión de Empleados</h1>
+            <p class="page-subtitle">Administra y visualiza la información de los empleados</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <p class="stat-label">Total Empleados</p>
+                    <h3 class="stat-value">{{totalEmpleados}}</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-content">
+                    <p class="stat-label">Activos</p>
+                    <h3 class="stat-value">{{empleadosActivos}}</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon yellow">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <p class="stat-label">Salario Promedio</p>
+                    <h3 class="stat-value">${{salarioPromedio | number:'1.0-0'}}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-grid">
+            <!-- Pie Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Empleados por Cargo</h3>
+                </div>
+                <div class="chart-content">
+                    <div class="pie-chart">
+                        <svg viewBox="0 0 200 200" class="pie-svg">
+                            <circle *ngFor="let cargo of cargos; let i = index" cx="100" cy="100" r="80" fill="none"
+                                [attr.stroke]="cargo.color" stroke-width="40"
+                                [attr.stroke-dasharray]="cargo.percentage * 5.03 + ' 503'"
+                                [attr.stroke-dashoffset]="-getCumulativePercentage(i) * 5.03"
+                                transform="rotate(-90 100 100)">
+                            </circle>
+                        </svg>
+
+                        <div class="pie-legend">
+                            <div class="legend-item" *ngFor="let cargo of cargos">
+                                <span class="legend-color" [style.background-color]="cargo.color"></span>
+                                <span class="legend-label">{{cargo.name}} ({{cargo.percentage |
+                                    number:'1.0-0'}}%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Empleados por Cargo</h3>
+                </div>
+                <div class="chart-content">
+                    <div class="bar-chart">
+                        <div class="bar-item" *ngFor="let cargo of cargos">
+                            <div class="bar-label">{{cargo.name}}</div>
+                            <div class="bar-container">
+                                <div class="bar-fill" [style.width.%]="cargo.percentage"
+                                    [style.background-color]="cargo.color"></div>
+                                <span class="bar-value">{{cargo.count}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employees Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3 class="table-title">Lista de Empleados</h3>
+                <button class="btn-primary" (click)="openModal()">
+                    <i class="fas fa-plus"></i>
+                    Agregar Empleado
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Cédula</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Cargo</th>
+                            <th>Rol</th>
+                            <th>Salario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let empleado of empleados">
+                            <td>{{empleado.cedula}}</td>
+                            <td>{{empleado.nombre}}</td>
+                            <td>{{empleado.apellido}}</td>
+                            <td>{{empleado.telefono}}</td>
+                            <td>{{empleado.email}}</td>
+                            <td>{{empleado.cargo}}</td>
+                            <td>
+                                <span class="badge" [ngClass]="{
+                    'badge-blue': empleado.rol === 'Administrador',
+                    'badge-green': empleado.rol === 'Empleado',
+                    'badge-purple': empleado.rol === 'Supervisor'
+                }">
+                                    {{empleado.rol}}
+                                </span>
+                            </td>
+                            <td>${{empleado.salario | number:'1.0-0'}}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-edit" (click)="editarEmpleado(empleado)"
+                                        title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-action btn-delete" (click)="eliminarEmpleado(empleado)"
+                                        title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <app-save-component [isOpen]="mostrarModal" (onClose)="cerrarModal()" (onSave)="guardarEmpleado($event)">
+    </app-save-component>
+
+    <app-edit-component *ngIf="mostrarModalEditar && empleadoSeleccionado" [isOpen]="mostrarModalEditar"
+        [empleadoToEdit]="empleadoSeleccionado" (onClose)="cerrarModalEditar()" (onSave)="actualizarEmpleado($event)">
+    </app-edit-component>

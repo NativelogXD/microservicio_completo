@@ -1,0 +1,543 @@
+﻿{
+    "openapi":  "3.1.0",
+    "info":  {
+                 "title":  "Microservicio de Aviones ????",
+                 "description":  "API para gesti??n de aviones",
+                 "version":  "1.0.0"
+             },
+    "paths":  {
+                  "/aviones/":  {
+                                    "post":  {
+                                                 "tags":  [
+                                                              "Aviones"
+                                                          ],
+                                                 "summary":  "Crear Avion",
+                                                 "description":  "Crear un nuevo avi??n\n\n- **modelo**: Modelo del avi??n (requerido)\n- **capacidad**: Capacidad de pasajeros (requerido)\n- **aerolinea**: Aerol??nea propietaria (requerido)\n- **estado**: Estado del avi??n (opcional, por defecto: disponible)\n- **fecha_fabricacion**: Fecha de fabricaci??n (opcional)",
+                                                 "operationId":  "crear_avion_aviones__post",
+                                                 "requestBody":  {
+                                                                     "required":  true,
+                                                                     "content":  {
+                                                                                     "application/json":  {
+                                                                                                              "schema":  {
+                                                                                                                             "$ref":  "#/components/schemas/AvionDTO"
+                                                                                                                         }
+                                                                                                          }
+                                                                                 }
+                                                                 },
+                                                 "responses":  {
+                                                                   "201":  {
+                                                                               "description":  "Successful Response",
+                                                                               "content":  {
+                                                                                               "application/json":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/AvionDTO"
+                                                                                                                                   }
+                                                                                                                    }
+                                                                                           }
+                                                                           },
+                                                                   "422":  {
+                                                                               "description":  "Validation Error",
+                                                                               "content":  {
+                                                                                               "application/json":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                   }
+                                                                                                                    }
+                                                                                           }
+                                                                           }
+                                                               }
+                                             },
+                                    "get":  {
+                                                "tags":  [
+                                                             "Aviones"
+                                                         ],
+                                                "summary":  "Obtener Todos Aviones",
+                                                "description":  "Obtener todos los aviones con paginaci??n\n\n- **skip**: N??mero de registros a omitir (paginaci??n)\n- **limit**: N??mero m??ximo de registros a retornar",
+                                                "operationId":  "obtener_todos_aviones_aviones__get",
+                                                "parameters":  [
+                                                                   {
+                                                                       "name":  "skip",
+                                                                       "in":  "query",
+                                                                       "required":  false,
+                                                                       "schema":  {
+                                                                                      "type":  "integer",
+                                                                                      "minimum":  0,
+                                                                                      "description":  "N??mero de registros a omitir",
+                                                                                      "default":  0,
+                                                                                      "title":  "Skip"
+                                                                                  },
+                                                                       "description":  "N??mero de registros a omitir"
+                                                                   },
+                                                                   {
+                                                                       "name":  "limit",
+                                                                       "in":  "query",
+                                                                       "required":  false,
+                                                                       "schema":  {
+                                                                                      "type":  "integer",
+                                                                                      "maximum":  1000,
+                                                                                      "minimum":  1,
+                                                                                      "description":  "N??mero m??ximo de registros a retornar",
+                                                                                      "default":  100,
+                                                                                      "title":  "Limit"
+                                                                                  },
+                                                                       "description":  "N??mero m??ximo de registros a retornar"
+                                                                   }
+                                                               ],
+                                                "responses":  {
+                                                                  "200":  {
+                                                                              "description":  "Successful Response",
+                                                                              "content":  {
+                                                                                              "application/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "type":  "array",
+                                                                                                                                      "items":  {
+                                                                                                                                                    "$ref":  "#/components/schemas/AvionDTO"
+                                                                                                                                                },
+                                                                                                                                      "title":  "Response Obtener Todos Aviones Aviones  Get"
+                                                                                                                                  }
+                                                                                                                   }
+                                                                                          }
+                                                                          },
+                                                                  "422":  {
+                                                                              "description":  "Validation Error",
+                                                                              "content":  {
+                                                                                              "application/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                  }
+                                                                                                                   }
+                                                                                          }
+                                                                          }
+                                                              }
+                                            }
+                                },
+                  "/aviones/{avion_id}":  {
+                                              "get":  {
+                                                          "tags":  [
+                                                                       "Aviones"
+                                                                   ],
+                                                          "summary":  "Obtener Avion",
+                                                          "description":  "Obtener un avi??n por su ID\n\n- **avion_id**: ID ??nico del avi??n",
+                                                          "operationId":  "obtener_avion_aviones__avion_id__get",
+                                                          "parameters":  [
+                                                                             {
+                                                                                 "name":  "avion_id",
+                                                                                 "in":  "path",
+                                                                                 "required":  true,
+                                                                                 "schema":  {
+                                                                                                "type":  "integer",
+                                                                                                "title":  "Avion Id"
+                                                                                            }
+                                                                             }
+                                                                         ],
+                                                          "responses":  {
+                                                                            "200":  {
+                                                                                        "description":  "Successful Response",
+                                                                                        "content":  {
+                                                                                                        "application/json":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/AvionDTO"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                    }
+                                                                                    },
+                                                                            "422":  {
+                                                                                        "description":  "Validation Error",
+                                                                                        "content":  {
+                                                                                                        "application/json":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                    }
+                                                                                    }
+                                                                        }
+                                                      },
+                                              "put":  {
+                                                          "tags":  [
+                                                                       "Aviones"
+                                                                   ],
+                                                          "summary":  "Actualizar Avion",
+                                                          "description":  "Actualizar un avi??n existente\n\n- **avion_id**: ID del avi??n a actualizar\n- **avion_dto**: Datos actualizados del avi??n",
+                                                          "operationId":  "actualizar_avion_aviones__avion_id__put",
+                                                          "parameters":  [
+                                                                             {
+                                                                                 "name":  "avion_id",
+                                                                                 "in":  "path",
+                                                                                 "required":  true,
+                                                                                 "schema":  {
+                                                                                                "type":  "integer",
+                                                                                                "title":  "Avion Id"
+                                                                                            }
+                                                                             }
+                                                                         ],
+                                                          "requestBody":  {
+                                                                              "required":  true,
+                                                                              "content":  {
+                                                                                              "application/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/AvionDTO"
+                                                                                                                                  }
+                                                                                                                   }
+                                                                                          }
+                                                                          },
+                                                          "responses":  {
+                                                                            "200":  {
+                                                                                        "description":  "Successful Response",
+                                                                                        "content":  {
+                                                                                                        "application/json":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/AvionDTO"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                    }
+                                                                                    },
+                                                                            "422":  {
+                                                                                        "description":  "Validation Error",
+                                                                                        "content":  {
+                                                                                                        "application/json":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                    }
+                                                                                    }
+                                                                        }
+                                                      },
+                                              "delete":  {
+                                                             "tags":  [
+                                                                          "Aviones"
+                                                                      ],
+                                                             "summary":  "Eliminar Avion",
+                                                             "description":  "Eliminar un avi??n por ID\n\n- **avion_id**: ID del avi??n a eliminar",
+                                                             "operationId":  "eliminar_avion_aviones__avion_id__delete",
+                                                             "parameters":  [
+                                                                                {
+                                                                                    "name":  "avion_id",
+                                                                                    "in":  "path",
+                                                                                    "required":  true,
+                                                                                    "schema":  {
+                                                                                                   "type":  "integer",
+                                                                                                   "title":  "Avion Id"
+                                                                                               }
+                                                                                }
+                                                                            ],
+                                                             "responses":  {
+                                                                               "200":  {
+                                                                                           "description":  "Successful Response",
+                                                                                           "content":  {
+                                                                                                           "application/json":  {
+                                                                                                                                    "schema":  {
+                                                                                                                                                   "$ref":  "#/components/schemas/AvionDTO"
+                                                                                                                                               }
+                                                                                                                                }
+                                                                                                       }
+                                                                                       },
+                                                                               "422":  {
+                                                                                           "description":  "Validation Error",
+                                                                                           "content":  {
+                                                                                                           "application/json":  {
+                                                                                                                                    "schema":  {
+                                                                                                                                                   "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                               }
+                                                                                                                                }
+                                                                                                       }
+                                                                                       }
+                                                                           }
+                                                         }
+                                          },
+                  "/aviones/estado/{estado}":  {
+                                                   "get":  {
+                                                               "tags":  [
+                                                                            "Aviones"
+                                                                        ],
+                                                               "summary":  "Obtener Aviones Por Estado",
+                                                               "description":  "Obtener aviones por estado\n\n- **estado**: Estado del avi??n (disponible, mantenimiento, fuera_de_servicio)",
+                                                               "operationId":  "obtener_aviones_por_estado_aviones_estado__estado__get",
+                                                               "parameters":  [
+                                                                                  {
+                                                                                      "name":  "estado",
+                                                                                      "in":  "path",
+                                                                                      "required":  true,
+                                                                                      "schema":  {
+                                                                                                     "type":  "string",
+                                                                                                     "title":  "Estado"
+                                                                                                 }
+                                                                                  }
+                                                                              ],
+                                                               "responses":  {
+                                                                                 "200":  {
+                                                                                             "description":  "Successful Response",
+                                                                                             "content":  {
+                                                                                                             "application/json":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "type":  "array",
+                                                                                                                                                     "items":  {
+                                                                                                                                                                   "$ref":  "#/components/schemas/AvionDTO"
+                                                                                                                                                               },
+                                                                                                                                                     "title":  "Response Obtener Aviones Por Estado Aviones Estado  Estado  Get"
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                         }
+                                                                                         },
+                                                                                 "422":  {
+                                                                                             "description":  "Validation Error",
+                                                                                             "content":  {
+                                                                                                             "application/json":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                         }
+                                                                                         }
+                                                                             }
+                                                           }
+                                               },
+                  "/aviones/aerolinea/{aerolinea}":  {
+                                                         "get":  {
+                                                                     "tags":  [
+                                                                                  "Aviones"
+                                                                              ],
+                                                                     "summary":  "Obtener Aviones Por Aerolinea",
+                                                                     "description":  "Obtener aviones por aerol??nea\n\n- **aerolinea**: Nombre de la aerol??nea",
+                                                                     "operationId":  "obtener_aviones_por_aerolinea_aviones_aerolinea__aerolinea__get",
+                                                                     "parameters":  [
+                                                                                        {
+                                                                                            "name":  "aerolinea",
+                                                                                            "in":  "path",
+                                                                                            "required":  true,
+                                                                                            "schema":  {
+                                                                                                           "type":  "string",
+                                                                                                           "title":  "Aerolinea"
+                                                                                                       }
+                                                                                        }
+                                                                                    ],
+                                                                     "responses":  {
+                                                                                       "200":  {
+                                                                                                   "description":  "Successful Response",
+                                                                                                   "content":  {
+                                                                                                                   "application/json":  {
+                                                                                                                                            "schema":  {
+                                                                                                                                                           "type":  "array",
+                                                                                                                                                           "items":  {
+                                                                                                                                                                         "$ref":  "#/components/schemas/AvionDTO"
+                                                                                                                                                                     },
+                                                                                                                                                           "title":  "Response Obtener Aviones Por Aerolinea Aviones Aerolinea  Aerolinea  Get"
+                                                                                                                                                       }
+                                                                                                                                        }
+                                                                                                               }
+                                                                                               },
+                                                                                       "422":  {
+                                                                                                   "description":  "Validation Error",
+                                                                                                   "content":  {
+                                                                                                                   "application/json":  {
+                                                                                                                                            "schema":  {
+                                                                                                                                                           "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                       }
+                                                                                                                                        }
+                                                                                                               }
+                                                                                               }
+                                                                                   }
+                                                                 }
+                                                     },
+                  "/aviones/fecha-fabricacion/{fecha_fabricacion}":  {
+                                                                         "get":  {
+                                                                                     "tags":  [
+                                                                                                  "Aviones"
+                                                                                              ],
+                                                                                     "summary":  "Obtener Aviones Por Fecha Fabricacion",
+                                                                                     "description":  "Obtener aviones por fecha de fabricaci??n\n\n- **fecha_fabricacion**: Fecha de fabricaci??n en formato ISO (YYYY-MM-DD)",
+                                                                                     "operationId":  "obtener_aviones_por_fecha_fabricacion_aviones_fecha_fabricacion__fecha_fabricacion__get",
+                                                                                     "parameters":  [
+                                                                                                        {
+                                                                                                            "name":  "fecha_fabricacion",
+                                                                                                            "in":  "path",
+                                                                                                            "required":  true,
+                                                                                                            "schema":  {
+                                                                                                                           "type":  "string",
+                                                                                                                           "format":  "date-time",
+                                                                                                                           "title":  "Fecha Fabricacion"
+                                                                                                                       }
+                                                                                                        }
+                                                                                                    ],
+                                                                                     "responses":  {
+                                                                                                       "200":  {
+                                                                                                                   "description":  "Successful Response",
+                                                                                                                   "content":  {
+                                                                                                                                   "application/json":  {
+                                                                                                                                                            "schema":  {
+                                                                                                                                                                           "type":  "array",
+                                                                                                                                                                           "items":  {
+                                                                                                                                                                                         "$ref":  "#/components/schemas/AvionDTO"
+                                                                                                                                                                                     },
+                                                                                                                                                                           "title":  "Response Obtener Aviones Por Fecha Fabricacion Aviones Fecha Fabricacion  Fecha Fabricacion  Get"
+                                                                                                                                                                       }
+                                                                                                                                                        }
+                                                                                                                               }
+                                                                                                               },
+                                                                                                       "422":  {
+                                                                                                                   "description":  "Validation Error",
+                                                                                                                   "content":  {
+                                                                                                                                   "application/json":  {
+                                                                                                                                                            "schema":  {
+                                                                                                                                                                           "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                                       }
+                                                                                                                                                        }
+                                                                                                                               }
+                                                                                                               }
+                                                                                                   }
+                                                                                 }
+                                                                     },
+                  "/":  {
+                            "get":  {
+                                        "summary":  "Root",
+                                        "description":  "Endpoint ra??z con informaci??n b??sica del microservicio",
+                                        "operationId":  "root__get",
+                                        "responses":  {
+                                                          "200":  {
+                                                                      "description":  "Successful Response",
+                                                                      "content":  {
+                                                                                      "application/json":  {
+                                                                                                               "schema":  {
+
+                                                                                                                          }
+                                                                                                           }
+                                                                                  }
+                                                                  }
+                                                      }
+                                    }
+                        },
+                  "/health":  {
+                                  "get":  {
+                                              "summary":  "Health Check",
+                                              "description":  "Endpoint de salud para monitoreo",
+                                              "operationId":  "health_check_health_get",
+                                              "responses":  {
+                                                                "200":  {
+                                                                            "description":  "Successful Response",
+                                                                            "content":  {
+                                                                                            "application/json":  {
+                                                                                                                     "schema":  {
+
+                                                                                                                                }
+                                                                                                                 }
+                                                                                        }
+                                                                        }
+                                                            }
+                                          }
+                              }
+              },
+    "components":  {
+                       "schemas":  {
+                                       "AvionDTO":  {
+                                                        "properties":  {
+                                                                           "id":  {
+                                                                                      "anyOf":  [
+                                                                                                    {
+                                                                                                        "type":  "integer"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "null"
+                                                                                                    }
+                                                                                                ],
+                                                                                      "title":  "Id"
+                                                                                  },
+                                                                           "modelo":  {
+                                                                                          "type":  "string",
+                                                                                          "title":  "Modelo"
+                                                                                      },
+                                                                           "capacidad":  {
+                                                                                             "type":  "integer",
+                                                                                             "title":  "Capacidad"
+                                                                                         },
+                                                                           "aerolinea":  {
+                                                                                             "type":  "string",
+                                                                                             "title":  "Aerolinea"
+                                                                                         },
+                                                                           "estado":  {
+                                                                                          "allOf":  [
+                                                                                                        {
+                                                                                                            "$ref":  "#/components/schemas/EstadoEnum"
+                                                                                                        }
+                                                                                                    ],
+                                                                                          "default":  "disponible"
+                                                                                      },
+                                                                           "fecha_fabricacion":  {
+                                                                                                     "anyOf":  [
+                                                                                                                   {
+                                                                                                                       "type":  "string",
+                                                                                                                       "format":  "date-time"
+                                                                                                                   },
+                                                                                                                   {
+                                                                                                                       "type":  "null"
+                                                                                                                   }
+                                                                                                               ],
+                                                                                                     "title":  "Fecha Fabricacion"
+                                                                                                 }
+                                                                       },
+                                                        "type":  "object",
+                                                        "required":  [
+                                                                         "modelo",
+                                                                         "capacidad",
+                                                                         "aerolinea"
+                                                                     ],
+                                                        "title":  "AvionDTO"
+                                                    },
+                                       "EstadoEnum":  {
+                                                          "type":  "string",
+                                                          "enum":  [
+                                                                       "disponible",
+                                                                       "mantenimiento",
+                                                                       "fuera_de_servicio"
+                                                                   ],
+                                                          "title":  "EstadoEnum"
+                                                      },
+                                       "HTTPValidationError":  {
+                                                                   "properties":  {
+                                                                                      "detail":  {
+                                                                                                     "items":  {
+                                                                                                                   "$ref":  "#/components/schemas/ValidationError"
+                                                                                                               },
+                                                                                                     "type":  "array",
+                                                                                                     "title":  "Detail"
+                                                                                                 }
+                                                                                  },
+                                                                   "type":  "object",
+                                                                   "title":  "HTTPValidationError"
+                                                               },
+                                       "ValidationError":  {
+                                                               "properties":  {
+                                                                                  "loc":  {
+                                                                                              "items":  {
+                                                                                                            "anyOf":  [
+                                                                                                                          {
+                                                                                                                              "type":  "string"
+                                                                                                                          },
+                                                                                                                          {
+                                                                                                                              "type":  "integer"
+                                                                                                                          }
+                                                                                                                      ]
+                                                                                                        },
+                                                                                              "type":  "array",
+                                                                                              "title":  "Location"
+                                                                                          },
+                                                                                  "msg":  {
+                                                                                              "type":  "string",
+                                                                                              "title":  "Message"
+                                                                                          },
+                                                                                  "type":  {
+                                                                                               "type":  "string",
+                                                                                               "title":  "Error Type"
+                                                                                           }
+                                                                              },
+                                                               "type":  "object",
+                                                               "required":  [
+                                                                                "loc",
+                                                                                "msg",
+                                                                                "type"
+                                                                            ],
+                                                               "title":  "ValidationError"
+                                                           }
+                                   }
+                   }
+}

@@ -1,0 +1,94 @@
+<!-- Componente de Edición de Avión (Modal) -->
+<div class="modal-overlay" *ngIf="isOpen" (click)="closeModal()">
+    <!-- Modal Container -->
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h2 class="modal-title">Editar Avión</h2>
+            <button class="close-button" (click)="closeModal()" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <form #avionForm="ngForm" (ngSubmit)="saveAvion()">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <!-- Información del Avión -->
+                    <div class="form-section">
+                        <h3 class="section-title">Detalles del Avión</h3>
+
+                        <!-- Modelo -->
+                        <div class="form-group">
+                            <label for="modelo">Modelo</label>
+                            <input type="text" id="modelo" name="modelo" [(ngModel)]="avion.modelo"
+                                placeholder="Ej: Boeing 747" required class="form-input">
+                        </div>
+
+                        <!-- Aerolínea -->
+                        <div class="form-group">
+                            <label for="aerolinea">Aerolínea</label>
+                            <input type="text" id="aerolinea" name="aerolinea" [(ngModel)]="avion.aerolinea"
+                                placeholder="Ej: Air Manus" required class="form-input">
+                        </div>
+                    </div>
+
+                    <!-- Especificaciones y Estado -->
+                    <div class="form-section">
+                        <h3 class="section-title">Especificaciones</h3>
+
+                        <!-- Capacidad -->
+                        <div class="form-group">
+                            <label for="capacidad">Capacidad de Pasajeros</label>
+                            <input type="number" id="capacidad" name="capacidad" [(ngModel)]="avion.capacidad"
+                                placeholder="0" required min="1" class="form-input">
+                        </div>
+
+                        <!-- Fecha de Fabricación -->
+                        <div class="form-group">
+                            <label for="fecha_fabricacion">Fecha de Fabricación</label>
+                            <!-- Se asume que el input type="date" es adecuado para la fecha_fabricacion -->
+                            <input type="date" id="fecha_fabricacion" name="fecha_fabricacion"
+                                [(ngModel)]="avion.fecha_fabricacion" required class="form-input">
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <select id="estado" name="estado" [(ngModel)]="avion.estado" required class="form-select">
+                                <option value="">Seleccione un estado</option>
+                                <!-- Se asume que se puede iterar sobre los valores del enum en el template -->
+                                <option value="disponible">Disponible</option>
+                                <option value="mantenimiento">Mantenimiento</option>
+                                <option value="fuera_de_servicio">Fuera de Servicio</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" (click)="closeModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary" [disabled]="!avionForm.form.valid">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Actualizar Avión
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
