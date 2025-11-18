@@ -449,11 +449,12 @@ class AgentCore:
                             provided_fields = [k for k in req if k in (extracted or {})]
                         cov_ratio = (len(provided_fields) / max(len(required_fields), 1)) if required_fields else 1.0
                         min_cov = getattr(get_config().reasoning, "min_coverage_for_execution", 1.0)
-                        if extracted and cov_ratio >= min_cov:
+                        # Si la herramienta no tiene campos requeridos, ejecutar aunque no haya extracción
+                        if (not required_fields) or (extracted and cov_ratio >= min_cov):
                             return ReasoningResult(
                                 action=ActionType.TOOL_CALL,
                                 tool_name=top_name,
-                                arguments=extracted,
+                                arguments=extracted or {},
                                 reasoning=f"Fallback semántico (score={top_score:.3f})",
                                 confidence=min(0.8, 0.6 + (top_score - dt)),
                                 requires_clarification=False,
@@ -567,7 +568,8 @@ class AgentCore:
                     else:
                         for r in req:
                             fields_set.add(r)
-                    model_cls = MCPModelMapper.get_create_model(tool_name_for_schema) or MCPModelMapper.resolve_model_by_schema(schema)
+                    # Solo complementar campos si la herramienta es de creación explícita
+                    model_cls = MCPModelMapper.get_create_model(tool_name_for_schema)
                     if model_cls:
                         try:
                             schema_json = model_cls.model_json_schema()

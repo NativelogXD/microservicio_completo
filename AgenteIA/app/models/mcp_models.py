@@ -497,6 +497,8 @@ class MCPModelMapper:
                 keys = (inner.get("required", []) or [])
             else:
                 keys = req
+            if not keys:
+                return None
             best_model = None
             best_score = -1.0
             for _, model in cls.CREATE_MODELS.items():

@@ -1,11 +1,22 @@
 from flask import Blueprint, request, jsonify
 from flasgger import swag_from
-from simulation.MantenimientoService import MantenimientoService
-from simulation.Mantenimiento import Mantenimiento
+from persistence.servicelmpl.MantenimientoServiceDb import MantenimientoServiceDb
 from simulation.MantenimientoSchema import MantenimientoCreateSchema, MantenimientoUpdateSchema
 
 mantenimiento_bp = Blueprint("mantenimiento", __name__)
-service = MantenimientoService()
+service = MantenimientoServiceDb()
+
+def _to_dict(m):
+    return {
+        "id": getattr(m, "id", None),
+        "id_avion": getattr(m, "id_avion", None),
+        "tipo": getattr(m, "tipo", None),
+        "descripcion": getattr(m, "descripcion", None),
+        "fecha": getattr(m, "fecha", None).isoformat() if getattr(m, "fecha", None) else None,
+        "responsable": getattr(m, "responsable", None),
+        "costo": getattr(m, "costo", None),
+        "estado": getattr(m, "estado", None),
+    }
 
 # ---------------------------------------------------
 # GET all
@@ -35,7 +46,9 @@ service = MantenimientoService()
 })
 @mantenimiento_bp.route("/mantenimientos", methods=["GET"])
 def get_all():
-    mantenimientos = [m.__dict__ for m in service.find_all()]
+    mantenimientos = [
+        _to_dict(m) for m in service.find_all()
+    ]
     return jsonify(mantenimientos), 200
 
 
@@ -62,7 +75,7 @@ def get_all():
 def get_by_id(id):
     mantenimiento = service.find_by_id(id)
     if mantenimiento:
-        return jsonify(mantenimiento.__dict__), 200
+        return jsonify(_to_dict(mantenimiento)), 200
     return jsonify({"message": "Mantenimiento no encontrado"}), 404
 
 
@@ -96,19 +109,9 @@ def get_by_id(id):
 @mantenimiento_bp.route("/mantenimientos", methods=["POST"])
 def create():
     data = request.json or {}
-    # Validar entrada con Marshmallow
     payload = MantenimientoCreateSchema().load(data)
-    nuevo = Mantenimiento(
-        id_avion=payload["id_avion"],
-        tipo=payload["tipo"],
-        descripcion=payload["descripcion"],
-        fecha=str(payload["fecha"]),
-        responsable=payload["responsable"],
-        costo=payload["costo"],
-        estado=payload.get("estado", "Pendiente")
-    )
-    service.save(nuevo)
-    return jsonify(nuevo.__dict__), 201
+    creado = service.save(payload)
+    return jsonify(_to_dict(creado)), 201
 
 
 # ---------------------------------------------------
@@ -132,7 +135,7 @@ def update(id):
     payload = MantenimientoUpdateSchema().load(data)
     actualizado = service.update(id, payload)
     if actualizado:
-        return jsonify(actualizado.__dict__), 200
+        return jsonify(_to_dict(actualizado)), 200
     return jsonify({"message": "Mantenimiento no encontrado"}), 404
 
 
@@ -170,7 +173,9 @@ def delete(id):
 })
 @mantenimiento_bp.route("/mantenimientos/avion/<string:id_avion>", methods=["GET"])
 def get_by_avion(id_avion):
-    mantenimientos = [m.__dict__ for m in service.find_by_avion(id_avion)]
+    mantenimientos = [
+        _to_dict(m) for m in service.find_by_avion(id_avion)
+    ]
     return jsonify(mantenimientos), 200
 
 
@@ -187,5 +192,7 @@ def get_by_avion(id_avion):
 })
 @mantenimiento_bp.route("/mantenimientos/estado/<string:estado>", methods=["GET"])
 def get_by_estado(estado):
-    mantenimientos = [m.__dict__ for m in service.find_by_estado(estado)]
+    mantenimientos = [
+        _to_dict(m) for m in service.find_by_estado(estado)
+    ]
     return jsonify(mantenimientos), 200

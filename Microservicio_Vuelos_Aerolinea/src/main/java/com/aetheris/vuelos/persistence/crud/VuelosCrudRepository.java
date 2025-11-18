@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface VuelosCrudRepository extends CrudRepository<Vuelo, String> {
 
@@ -15,8 +17,10 @@ public interface VuelosCrudRepository extends CrudRepository<Vuelo, String> {
     List<Vuelo> findByEstadoIgnoreCase(String estado);
     List<Vuelo> findByFecha(LocalDate fecha);
     List<Vuelo> findByFechaBetween(LocalDate start, LocalDate end);
-    List<Vuelo> findByIdAvion(String id_avion);
-    List<Vuelo> findByIdPiloto(String id_piloto);
+    @Query("SELECT v FROM Vuelo v WHERE v.id_avion = :idAvion")
+    List<Vuelo> findByIdAvion(@Param("idAvion") String id_avion);
+    @Query("SELECT v FROM Vuelo v WHERE v.id_piloto = :idPiloto")
+    List<Vuelo> findByIdPiloto(@Param("idPiloto") String id_piloto);
     List<Vuelo> findByOrigenAndDestinoAndFecha(String origen, String destino, LocalDate fecha);
     List<Vuelo> findByPrecioBaseBetween(double min, double max);
     List<Vuelo> findByFechaAndHoraBetween(LocalDate fecha, LocalTime start, LocalTime end);

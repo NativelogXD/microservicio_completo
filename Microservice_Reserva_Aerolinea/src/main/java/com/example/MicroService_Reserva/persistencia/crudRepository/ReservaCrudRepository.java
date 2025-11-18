@@ -3,6 +3,8 @@ package com.example.MicroService_Reserva.persistencia.crudRepository;
 import com.example.MicroService_Reserva.persistencia.Entity.Reserva;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -13,7 +15,8 @@ public interface ReservaCrudRepository extends JpaRepository<Reserva, Long> {
 
     List<Reserva> findByEstado(String estado);
 
-    List<Reserva> findByIdVuelo(String id_vuelo);
+    @Query("SELECT r FROM Reserva r WHERE r.id_vuelo = :idVuelo")
+    List<Reserva> findByIdVuelo(@Param("idVuelo") String id_vuelo);
 
     List<Reserva> findAll ();
 
